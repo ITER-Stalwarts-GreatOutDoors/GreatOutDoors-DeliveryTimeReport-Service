@@ -83,7 +83,10 @@ public class RetailerInventoryBean {
 				+ ", productName=" + productName + ", productUniqueId=" + productUniqueId + ", deliveryTimePeriod="
 				+ deliveryTimePeriod + ", shelfTimePeriod=" + shelfTimePeriod + "]";
 	}
-	
+
+	public static String periodToString (Period period) {
+		return "Years: " + period.getYears() + " Months: " + period.getMonths() + " Days: " + period.getDays();
+	}
 	
 
 }

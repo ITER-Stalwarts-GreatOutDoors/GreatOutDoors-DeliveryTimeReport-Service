@@ -74,6 +74,10 @@ public class RetailerInventoryDTO {
 				+ productDispatchTimestamp + ", productRecieveTimestamp=" + productRecieveTimestamp
 				+ ", productSaleTimestamp=" + productSaleTimestamp + "]";
 	}
+	public Calendar getProductReceiveTimestamp() {
+		// TODO Auto-generated method stub
+		return null;
+	}
 	
 	
 	
