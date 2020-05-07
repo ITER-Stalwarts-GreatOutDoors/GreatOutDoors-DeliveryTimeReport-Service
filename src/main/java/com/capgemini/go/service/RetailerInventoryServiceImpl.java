@@ -7,8 +7,16 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.persistence.RollbackException;
+
 import com.capgemini.go.exception.ExceptionConstants;
 import com.capgemini.go.exception.UserException;
+import com.capgemini.go.repository.RetailerInventoryRepository;
+import com.capgemini.go.repository.UserRepository;
+
+import org.hibernate.Session;
+import org.hibernate.SessionFactory;
+import org.hibernate.Transaction;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.capgemini.go.bean.RetailerInventoryBean;
@@ -20,7 +28,22 @@ import com.capgemini.go.exception.RetailerInventoryException;
 import com.capgemini.go.utility.GoUtility;
 
 public class RetailerInventoryServiceImpl implements RetailerInventoryService {
+	
+	@Autowired
+	private SessionFactory sessionFactory;
+	public SessionFactory getSessionFactory() {
+		return sessionFactory;
+	}
 
+	public void setSessionFactory(SessionFactory sessionFactory) {
+		this.sessionFactory = sessionFactory;
+	}
+	
+	
+	@Autowired
+	private RetailerInventoryRepository retailerInventoryRepository;
+	@Autowired
+	private UserRepository userRepository;
 	@Autowired
 	private RetailerInventoryDao retailerInventoryDao;
 	
@@ -35,16 +58,18 @@ public class RetailerInventoryServiceImpl implements RetailerInventoryService {
 		this.userDao = userDao;
 	}
 	@Override
-	public List<RetailerInventoryBean> getItemWiseDeliveryTimeReport(String retailerId) throws RetailerInventoryException {
+	public List<RetailerInventoryBean> getItemWiseDeliveryTimeReport(int retailerId) throws RetailerInventoryException {
 		// TODO Auto-generated method stub
 		//logger.info("getItemWiseDeliveryTimeReport - " + "Request for item wise delivery time report received");
 		List<RetailerInventoryBean> result = new ArrayList<RetailerInventoryBean> ();
 		
-		RetailerInventoryDTO queryArguments = new RetailerInventoryDTO (retailerId, (byte)0, null, null, null, null, null);
-		List<RetailerInventoryDTO> listOfDeliveredItems = this.retailerInventoryDao.getDeliveredItemsDetails(queryArguments);
+		//RetailerInventoryDTO queryArguments = new RetailerInventoryDTO (retailerId, (byte)0, null, null, null, null, null);
+		List<RetailerInventoryDTO> listOfDeliveredItems = retailerInventoryRepository.findAllByretailerId(retailerId);
+				//this.retailerInventoryDao.getDeliveredItemsDetails(queryArguments);
 				
 		try {
-			List<UserDTO> userList = this.userDao.getUserIdList();
+			List<UserDTO> userList = (List<UserDTO>) userRepository.findAll();
+					//this.userDao.getUserIdList();
 			
 			for (RetailerInventoryDTO deliveredItem : listOfDeliveredItems) {
 				RetailerInventoryBean object = new RetailerInventoryBean ();
@@ -58,14 +83,11 @@ public class RetailerInventoryServiceImpl implements RetailerInventoryService {
 				object.setProductCategoryNumber(deliveredItem.getProductCategory());
 				object.setProductCategoryName(GoUtility.getCategoryName(deliveredItem.getProductCategory()));
 				object.setProductUniqueId(deliveredItem.getProductUniqueId());
-				object.setDeliveryTimePeriod(GoUtility.calculatePeriod(deliveredItem.getProductDispatchTimestamp(), deliveredItem.getProductReceiveTimestamp()));
+				object.setDeliveryTimePeriod(GoUtility.calculatePeriod(deliveredItem.getProductDispatchTimestamp(), deliveredItem.getProductRecieveTimestamp()));
 				object.setShelfTimePeriod(null);
 				result.add(object);
 			}
 			
-		} catch (UserException error) {
-			//logger.error("getItemWiseDeliveryTimeReport - " + error.getMessage());
-			throw new RetailerInventoryException ("getItemWiseDeliveryTimeReport - " + ExceptionConstants.FAILED_TO_RETRIEVE_USERNAME);
 		} catch (RuntimeException error) {
 			//logger.error("getItemWiseDeliveryTimeReport - " + error.getMessage());
 			throw new RetailerInventoryException ("getItemWiseDeliveryTimeReport - " + ExceptionConstants.INTERNAL_RUNTIME_ERROR);
@@ -75,19 +97,21 @@ public class RetailerInventoryServiceImpl implements RetailerInventoryService {
 	}
 
 	@Override
-	public List<RetailerInventoryBean> getCategoryWiseDeliveryTimeReport(String retailerId) throws RetailerInventoryException{
+	public List<RetailerInventoryBean> getCategoryWiseDeliveryTimeReport(int retailerId) throws RetailerInventoryException{
 		// TODO Auto-generated method stub
 List<RetailerInventoryBean> result = new ArrayList<RetailerInventoryBean> ();
 		
-		RetailerInventoryDTO queryArguments = new RetailerInventoryDTO (retailerId, (byte)0, null, null, null, null, null);
-		List<RetailerInventoryDTO> listOfDeliveredItems = this.retailerInventoryDao.getDeliveredItemsDetails(queryArguments);
+		//RetailerInventoryDTO queryArguments = new RetailerInventoryDTO (retailerId, (byte)0, null, null, null, null, null);
+		List<RetailerInventoryDTO> listOfDeliveredItems = retailerInventoryRepository.findAllByretailerId(retailerId); 
+				//this.retailerInventoryDao.getDeliveredItemsDetails(queryArguments);
 		
 		Map<Integer, List<RetailerInventoryBean>> map = new HashMap<Integer, List<RetailerInventoryBean>>();
 		for (int category = 1; category <= 5; category++)
 			map.put(category, new ArrayList<RetailerInventoryBean>());
 		
 		try {
-			List<UserDTO> userList = this.userDao.getUserIdList();
+			List<UserDTO> userList = (List<UserDTO>) userRepository.findAll();
+					//this.userDao.getUserIdList();
 			for (RetailerInventoryDTO deliveredItem : listOfDeliveredItems) {
 				RetailerInventoryBean object = new RetailerInventoryBean ();
 				object.setRetailerId(retailerId);
@@ -100,7 +124,7 @@ List<RetailerInventoryBean> result = new ArrayList<RetailerInventoryBean> ();
 				object.setProductCategoryNumber(deliveredItem.getProductCategory());
 				object.setProductCategoryName(GoUtility.getCategoryName(deliveredItem.getProductCategory()));
 				object.setProductUniqueId(deliveredItem.getProductUniqueId());
-				object.setDeliveryTimePeriod(GoUtility.calculatePeriod(deliveredItem.getProductDispatchTimestamp(), deliveredItem.getProductReceiveTimestamp()));
+				object.setDeliveryTimePeriod(GoUtility.calculatePeriod(deliveredItem.getProductDispatchTimestamp(), deliveredItem.getProductRecieveTimestamp()));
 				object.setShelfTimePeriod(null);
 				map.get(Integer.valueOf(object.getProductCategoryNumber())).add(object);
 			}
@@ -126,10 +150,6 @@ List<RetailerInventoryBean> result = new ArrayList<RetailerInventoryBean> ();
 				}
 			}
 			
-		} catch (UserException error) {
-			//logger.error("getCategoryWiseDeliveryTimeReport - " + error.getMessage());
-			error.printStackTrace();
-			throw new RetailerInventoryException ("getCategoryWiseDeliveryTimeReport - " + ExceptionConstants.FAILED_TO_RETRIEVE_USERNAME);
 		} catch (RuntimeException error) {
 			//logger.error("getCategoryWiseDeliveryTimeReport - " + error.getMessage());
 			error.printStackTrace();
@@ -139,16 +159,89 @@ List<RetailerInventoryBean> result = new ArrayList<RetailerInventoryBean> ();
 		return result;
 	}
 
+
+
 	@Override
-	public List<RetailerInventoryBean> getOutlierCategoryItemWiseDeliveryTimeReport(String retailerId) throws RetailerInventoryException {
+	public List<RetailerInventoryBean> getOutlierCategoryItemWiseDeliveryTimeReport(int retailerId)
+			throws RetailerInventoryException {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
-	public List<RetailerInventoryBean> getListOfRetailers() {
+	public boolean updateProductRecieveTimeStamp(RetailerInventoryDTO retailerinventorydto) throws RetailerInventoryException {
+		//logger.info("updateProductReceiveTimeStamp - " + "function called");
+		boolean receiveTimestampUpdated = false;
+		
+		Transaction transaction = null;
+		Session session = getSessionFactory().openSession();
+		try {
+			transaction = session.getTransaction();
+			transaction.begin();
+			RetailerInventoryDTO existingItem = (RetailerInventoryDTO) retailerInventoryRepository.findAll();
+					//session.find(RetailerInventoryDTO.class, queryArguments.getProductUniqueId());
+			if (existingItem == null) {
+				//logger.debug(ExceptionConstants.PRODUCT_NOT_IN_INVENTORY);
+				throw new RetailerInventoryException(
+						"updateProductReceiveTimeStamp - " + ExceptionConstants.PRODUCT_NOT_IN_INVENTORY);
+			}
+			existingItem.setProductRecieveTimestamp(retailerinventorydto.getProductRecieveTimestamp());
+			transaction.commit();
+		} catch (IllegalStateException error) {
+			//logger.error(error.getMessage());
+			throw new RetailerInventoryException(
+					"updateProductReceiveTimeStamp - " + ExceptionConstants.INAPPROPRIATE_METHOD_INVOCATION);
+		} catch (RollbackException error) {
+			//logger.error(error.getMessage());
+			throw new RetailerInventoryException(
+					"updateProductReceiveTimeStamp - " + ExceptionConstants.FAILURE_COMMIT_CHANGES);
+		} finally {
+			session.close();
+		}
+		receiveTimestampUpdated = true;
+		return receiveTimestampUpdated;
+		
+	}
+	
+	@Override
+	public boolean updateProductSaleTimeStamp(RetailerInventoryDTO retailerinventorydto) throws RetailerInventoryException {
 		// TODO Auto-generated method stub
-		return null;
+		boolean saleTimestampUpdated = false;
+		//logger.info("updateProductSaleTimeStamp - " + "function called");
+		/*
+		 * required arguments in `queryArguments` productUIN, productSaleTime
+		 * 
+		 * un-required productDispatchTime, productReceiveTime, productCategory,
+		 * retailerUserId
+		 */
+		Transaction transaction = null;
+		Session session = getSessionFactory().openSession();
+		try {
+			transaction = session.getTransaction();
+			transaction.begin();
+			RetailerInventoryDTO existingItem = (RetailerInventoryDTO) retailerInventoryRepository.findAll();
+					//session.find(RetailerInventoryDTO.class, queryArguments.getProductUniqueId());
+			if (existingItem == null) {
+				//logger.debug(ExceptionConstants.PRODUCT_NOT_IN_INVENTORY);
+				throw new RetailerInventoryException(
+						"updateProductSaleTimeStamp - " + ExceptionConstants.PRODUCT_NOT_IN_INVENTORY);
+			}
+			existingItem.setProductSaleTimestamp(retailerinventorydto.getProductSaleTimestamp());
+			transaction.commit();
+		} catch (IllegalStateException error) {
+			//logger.error("updateProductSaleTimeStamp - " + error.getMessage());
+			throw new RetailerInventoryException(
+					"updateProductSaleTimeStamp - " + ExceptionConstants.INAPPROPRIATE_METHOD_INVOCATION);
+		} catch (RollbackException error) {
+			//logger.error("updateProductSaleTimeStamp - " + error.getMessage());
+			throw new RetailerInventoryException(
+					"updateProductSaleTimeStamp - " + ExceptionConstants.FAILURE_COMMIT_CHANGES);
+		} finally {
+			session.close();
+		}
+		saleTimestampUpdated = true;
+		return saleTimestampUpdated;
+		
 	}
 
 }

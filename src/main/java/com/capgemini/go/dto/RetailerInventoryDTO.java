@@ -2,10 +2,17 @@ package com.capgemini.go.dto;
 
 import java.util.Calendar;
 
+import javax.persistence.Entity;
+import javax.persistence.Id;
+import javax.persistence.Table;
+
+@Entity
+@Table(name = "RETAILER_INVENTORY")
 public class RetailerInventoryDTO {
-	public String retailerId;
+	public int retailerId;
 	public byte productCategory;
 	public String productId;
+	@Id
 	public String productUniqueId;
 	public Calendar productDispatchTimestamp;
 	public Calendar productRecieveTimestamp;
@@ -14,7 +21,7 @@ public class RetailerInventoryDTO {
 		super();
 		// TODO Auto-generated constructor stub
 	}
-	public RetailerInventoryDTO(String retailerId, byte productCategory, String productId, String productUniqueId,
+	public RetailerInventoryDTO(int retailerId, byte productCategory, String productId, String productUniqueId,
 			Calendar productDispatchTimestamp, Calendar productRecieveTimestamp, Calendar productSaleTimestamp) {
 		super();
 		this.retailerId = retailerId;
@@ -25,10 +32,10 @@ public class RetailerInventoryDTO {
 		this.productRecieveTimestamp = productRecieveTimestamp;
 		this.productSaleTimestamp = productSaleTimestamp;
 	}
-	public String getRetailerId() {
+	public int getRetailerId() {
 		return retailerId;
 	}
-	public void setRetailerId(String retailerId) {
+	public void setRetailerId(int retailerId) {
 		this.retailerId = retailerId;
 	}
 	public byte getProductCategory() {
@@ -74,10 +81,7 @@ public class RetailerInventoryDTO {
 				+ productDispatchTimestamp + ", productRecieveTimestamp=" + productRecieveTimestamp
 				+ ", productSaleTimestamp=" + productSaleTimestamp + "]";
 	}
-	public Calendar getProductReceiveTimestamp() {
-		// TODO Auto-generated method stub
-		return null;
-	}
+	
 	
 	
 	

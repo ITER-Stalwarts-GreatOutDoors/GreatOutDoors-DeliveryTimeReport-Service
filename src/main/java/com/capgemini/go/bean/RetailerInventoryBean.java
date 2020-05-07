@@ -3,7 +3,7 @@ package com.capgemini.go.bean;
 import java.time.Period;
 
 public class RetailerInventoryBean {
-	private String retailerId;
+	private int retailerId;
 	private String retailerName;
 	private byte productCategoryNumber;
 	private String productCategoryName;
@@ -15,7 +15,7 @@ public class RetailerInventoryBean {
 		super();
 		// TODO Auto-generated constructor stub
 	}
-	public RetailerInventoryBean(String retailerId, String retailerName, byte productCategoryNumber,
+	public RetailerInventoryBean(int retailerId, String retailerName, byte productCategoryNumber,
 			String productCategoryName, String productName, String productUniqueId, Period deliveryTimePeriod,
 			Period shelfTimePeriod) {
 		super();
@@ -28,10 +28,10 @@ public class RetailerInventoryBean {
 		this.deliveryTimePeriod = deliveryTimePeriod;
 		this.shelfTimePeriod = shelfTimePeriod;
 	}
-	public String getRetailerId() {
+	public int getRetailerId() {
 		return retailerId;
 	}
-	public void setRetailerId(String retailerId) {
+	public void setRetailerId(int retailerId) {
 		this.retailerId = retailerId;
 	}
 	public String getRetailerName() {
