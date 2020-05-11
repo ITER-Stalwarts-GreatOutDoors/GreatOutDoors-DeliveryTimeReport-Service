@@ -4,6 +4,8 @@ import java.time.Duration;
 import java.time.Period;
 import java.util.Calendar;
 
+import org.springframework.stereotype.Component;
+
 import com.capgemini.go.exception.ExceptionConstants;
 
 public class GoUtility {

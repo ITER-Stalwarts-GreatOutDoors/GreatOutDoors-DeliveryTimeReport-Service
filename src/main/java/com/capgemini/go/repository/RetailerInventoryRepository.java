@@ -15,6 +15,6 @@ public interface RetailerInventoryRepository extends CrudRepository<RetailerInve
 	@Modifying
 	@Transactional
 	@Query("select ri from RetailerInventoryDTO ri where ri.retailerId=:retailerId")
-	List<RetailerInventoryDTO> findAllByretailerId(int retailerId);
+	List<RetailerInventoryDTO> findAllByretailerId(String retailerId);
 
 }

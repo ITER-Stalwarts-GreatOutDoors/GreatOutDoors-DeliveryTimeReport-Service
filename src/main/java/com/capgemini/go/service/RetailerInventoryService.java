@@ -8,14 +8,14 @@ import com.capgemini.go.dto.RetailerInventoryDTO;
 import com.capgemini.go.exception.RetailerInventoryException;
 
 public interface RetailerInventoryService {
-	public List<RetailerInventoryBean> getItemWiseDeliveryTimeReport(int retailerId) throws RetailerInventoryException;
-	public List<RetailerInventoryBean> getCategoryWiseDeliveryTimeReport(int retailerId) throws RetailerInventoryException;
+	public List<RetailerInventoryBean> getItemWiseDeliveryTimeReport(String retailerId) throws RetailerInventoryException;
+	public List<RetailerInventoryBean> getCategoryWiseDeliveryTimeReport(String retailerId) throws RetailerInventoryException;
 	public boolean updateProductRecieveTimeStamp(RetailerInventoryDTO retailerinventorydto) throws RetailerInventoryException;
 	public boolean updateProductSaleTimeStamp(RetailerInventoryDTO retailerinventorydto) throws RetailerInventoryException;
 	public List<RetailerInventoryDTO> getListOfRetailers();
-	public List<RetailerInventoryDTO> getInventoryById(int retailerId);
-	public List<RetailerInventoryBean> getMonthlyShelfTimeReport(int retailerId, Calendar dateSelection) throws RetailerInventoryException;;
-	public List<RetailerInventoryBean> getQuarterlyShelfTimeReport(int retailerId, Calendar dateSelection) throws RetailerInventoryException;;
-	public List<RetailerInventoryBean> getYearlyShelfTimeReport(int retailerId, Calendar dateSelection) throws RetailerInventoryException;;
+	public List<RetailerInventoryDTO> getInventoryById(String retailerId);
+	public List<RetailerInventoryBean> getMonthlyShelfTimeReport(String retailerId, Calendar dateSelection) throws RetailerInventoryException;;
+	public List<RetailerInventoryBean> getQuarterlyShelfTimeReport(String retailerId, Calendar dateSelection) throws RetailerInventoryException;;
+	public List<RetailerInventoryBean> getYearlyShelfTimeReport(String retailerId, Calendar dateSelection) throws RetailerInventoryException;;
 
 }

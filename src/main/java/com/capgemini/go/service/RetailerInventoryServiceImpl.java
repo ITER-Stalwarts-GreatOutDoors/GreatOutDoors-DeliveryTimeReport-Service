@@ -12,28 +12,20 @@ import javax.persistence.RollbackException;
 import com.capgemini.go.exception.ExceptionConstants;
 import com.capgemini.go.repository.RetailerInventoryRepository;
 import com.capgemini.go.repository.UserRepository;
-import org.hibernate.Session;
-import org.hibernate.SessionFactory;
-import org.hibernate.Transaction;
+
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
 import com.capgemini.go.bean.RetailerInventoryBean;
 import com.capgemini.go.dto.RetailerInventoryDTO;
 import com.capgemini.go.dto.UserDTO;
 import com.capgemini.go.exception.RetailerInventoryException;
-import com.capgemini.go.exception.UserException;
-import com.capgemini.go.utility.GoUtility;
 
+import com.capgemini.go.utility.GoUtility;
+@Service
 public class RetailerInventoryServiceImpl implements RetailerInventoryService {
 	
-	@Autowired
-	private SessionFactory sessionFactory;
-	public SessionFactory getSessionFactory() {
-		return sessionFactory;
-	}
 
-	public void setSessionFactory(SessionFactory sessionFactory) {
-		this.sessionFactory = sessionFactory;
-	}
 	
 	@Autowired
 	private RetailerInventoryRepository retailerInventoryRepository;
@@ -41,20 +33,21 @@ public class RetailerInventoryServiceImpl implements RetailerInventoryService {
 	private UserRepository userRepository;
 
 	@Override
-	public List<RetailerInventoryBean> getItemWiseDeliveryTimeReport(int retailerId) throws RetailerInventoryException {
+	public List<RetailerInventoryBean> getItemWiseDeliveryTimeReport(String retailerId) throws RetailerInventoryException {
 		List<RetailerInventoryBean> result = new ArrayList<RetailerInventoryBean> ();
 		List<RetailerInventoryDTO> listOfDeliveredItems = retailerInventoryRepository.findAllByretailerId(retailerId);		
 		try {
 			List<UserDTO> userList = (List<UserDTO>) userRepository.findAll();
 			 for (RetailerInventoryDTO deliveredItem : listOfDeliveredItems) {
 				RetailerInventoryBean object = new RetailerInventoryBean ();
-				object.setRetailerId(retailerId);
+			object.setRetailerId(retailerId);
 				for (UserDTO user : userList) {
 					if (user.getUserId().equals(retailerId)) {
 						object.setRetailerName(user.getUserName());
-						break;
-					}
+					break;
 				}
+				}
+				object.setRetailerName("vikash");
 				object.setProductCategoryNumber(deliveredItem.getProductCategory());
 				object.setProductCategoryName(GoUtility.getCategoryName(deliveredItem.getProductCategory()));
 				object.setProductUniqueId(deliveredItem.getProductUniqueId());
@@ -69,7 +62,7 @@ public class RetailerInventoryServiceImpl implements RetailerInventoryService {
 	}
 
 	@Override
-	public List<RetailerInventoryBean> getCategoryWiseDeliveryTimeReport(int retailerId) throws RetailerInventoryException{
+	public List<RetailerInventoryBean> getCategoryWiseDeliveryTimeReport(String retailerId) throws RetailerInventoryException{
 		List<RetailerInventoryBean> result = new ArrayList<RetailerInventoryBean> ();
 		List<RetailerInventoryDTO> listOfDeliveredItems = retailerInventoryRepository.findAllByretailerId(retailerId); 
 		Map<Integer, List<RetailerInventoryBean>> map = new HashMap<Integer, List<RetailerInventoryBean>>();
@@ -125,27 +118,23 @@ public class RetailerInventoryServiceImpl implements RetailerInventoryService {
 	@Override
 	public boolean updateProductRecieveTimeStamp(RetailerInventoryDTO retailerinventorydto) throws RetailerInventoryException {
 		boolean receiveTimestampUpdated = false;
-		Transaction transaction = null;
-		Session session = getSessionFactory().openSession();
+
 		try {
-			transaction = session.getTransaction();
-			transaction.begin();
+
 			RetailerInventoryDTO existingItem = (RetailerInventoryDTO) retailerInventoryRepository.findAll();
 			if (existingItem == null) {
 			throw new RetailerInventoryException(
 						"updateProductReceiveTimeStamp - " + ExceptionConstants.PRODUCT_NOT_IN_INVENTORY);
 			}
 			existingItem.setProductRecieveTimestamp(retailerinventorydto.getProductRecieveTimestamp());
-			transaction.commit();
+	
 		} catch (IllegalStateException error) {
 			throw new RetailerInventoryException(
 					"updateProductReceiveTimeStamp - " + ExceptionConstants.INAPPROPRIATE_METHOD_INVOCATION);
 		} catch (RollbackException error) {
 			throw new RetailerInventoryException(
 					"updateProductReceiveTimeStamp - " + ExceptionConstants.FAILURE_COMMIT_CHANGES);
-		} finally {
-			session.close();
-		}
+		} 
 		receiveTimestampUpdated = true;
 		return receiveTimestampUpdated;
 		
@@ -154,26 +143,21 @@ public class RetailerInventoryServiceImpl implements RetailerInventoryService {
 	@Override
 	public boolean updateProductSaleTimeStamp(RetailerInventoryDTO retailerinventorydto) throws RetailerInventoryException {
 		boolean saleTimestampUpdated = false;
-		Transaction transaction = null;
-		Session session = getSessionFactory().openSession();
+
 		try {
-			transaction = session.getTransaction();
-			transaction.begin();
 			RetailerInventoryDTO existingItem = (RetailerInventoryDTO) retailerInventoryRepository.findAll();
 			if (existingItem == null) {
 				throw new RetailerInventoryException(
 						"updateProductSaleTimeStamp - " + ExceptionConstants.PRODUCT_NOT_IN_INVENTORY);
 			}
 			existingItem.setProductSaleTimestamp(retailerinventorydto.getProductSaleTimestamp());
-			transaction.commit();
+	
 		} catch (IllegalStateException error) {
 			throw new RetailerInventoryException(
 					"updateProductSaleTimeStamp - " + ExceptionConstants.INAPPROPRIATE_METHOD_INVOCATION);
 		} catch (RollbackException error) {
 			throw new RetailerInventoryException(
 					"updateProductSaleTimeStamp - " + ExceptionConstants.FAILURE_COMMIT_CHANGES);
-		} finally {
-			session.close();
 		}
 		saleTimestampUpdated = true;
 		return saleTimestampUpdated;
@@ -186,7 +170,7 @@ public class RetailerInventoryServiceImpl implements RetailerInventoryService {
 	}
 
 	@Override
-	public List<RetailerInventoryDTO> getInventoryById(int retailerId) {
+	public List<RetailerInventoryDTO> getInventoryById(String retailerId) {
 		
 		return retailerInventoryRepository.findAllByretailerId(retailerId);
 	}
@@ -203,7 +187,7 @@ public class RetailerInventoryServiceImpl implements RetailerInventoryService {
 		return itemDeleted;
 	}
 	
-	public boolean addItemToInventory(int retailerId, byte productCategory, String productId, String productUIN) throws RetailerInventoryException {
+	public boolean addItemToInventory(String retailerId, byte productCategory, String productId, String productUIN) throws RetailerInventoryException {
 		boolean itemAdded = false;
 		Calendar currentSystemTimestamp = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
 		RetailerInventoryDTO queryArgument = new RetailerInventoryDTO(retailerId, productCategory, productId, productUIN, currentSystemTimestamp, null, null);
@@ -212,9 +196,9 @@ public class RetailerInventoryServiceImpl implements RetailerInventoryService {
 	}
 
 	@Override
-	public List<RetailerInventoryBean> getMonthlyShelfTimeReport(int retailerId, Calendar dateSelection)
+	public List<RetailerInventoryBean> getMonthlyShelfTimeReport(String retailerId, Calendar dateSelection)
 			throws RetailerInventoryException {
-List<RetailerInventoryBean> result = new ArrayList<RetailerInventoryBean> ();
+		List<RetailerInventoryBean> result = new ArrayList<RetailerInventoryBean> ();
 
 		List<RetailerInventoryDTO> listOfSoldItems =  retailerInventoryRepository.findAllByretailerId(retailerId);
 		try {
@@ -224,6 +208,7 @@ List<RetailerInventoryBean> result = new ArrayList<RetailerInventoryBean> ();
 				if (soldItem.getProductSaleTimestamp().get(Calendar.MONTH) == dateSelection.get(Calendar.MONTH)) {
 					RetailerInventoryBean object = new RetailerInventoryBean ();
 					object.setRetailerId(retailerId);
+					object.setRetailerName("plawan");
 					for (UserDTO user : userList) {
 						if (user.getUserId().equals(retailerId)) {
 							object.setRetailerName(user.getUserName());
@@ -250,13 +235,10 @@ List<RetailerInventoryBean> result = new ArrayList<RetailerInventoryBean> ();
 	}
 
 	@Override
-	public List<RetailerInventoryBean> getQuarterlyShelfTimeReport(int retailerId, Calendar dateSelection)
+	public List<RetailerInventoryBean> getQuarterlyShelfTimeReport(String retailerId, Calendar dateSelection)
 			throws RetailerInventoryException {
 		List<RetailerInventoryBean> result = new ArrayList<RetailerInventoryBean> ();
-		
-		//RetailerInventoryDTO queryArguments = new RetailerInventoryDTO (retailerId, (byte)0, null, null, null, dateSelection );
 		List<RetailerInventoryDTO> listOfSoldItems =  retailerInventoryRepository.findAllByretailerId(retailerId);
-				//this.retailerInventoryDao.getSoldItemsDetails(queryArguments);
 		try {
 			List<UserDTO> userList = (List<UserDTO>) userRepository.findAll();
 			
@@ -287,17 +269,12 @@ List<RetailerInventoryBean> result = new ArrayList<RetailerInventoryBean> ();
 	}
 
 	@Override
-	public List<RetailerInventoryBean> getYearlyShelfTimeReport(int retailerId, Calendar dateSelection)
+	public List<RetailerInventoryBean> getYearlyShelfTimeReport(String retailerId, Calendar dateSelection)
 			throws RetailerInventoryException {
 		List<RetailerInventoryBean> result = new ArrayList<RetailerInventoryBean>();
-
-		// RetailerInventoryDTO queryArguments = new RetailerInventoryDTO (retailerId,
-		// (byte)0, null, null, null, null, dateSelection);
 		List<RetailerInventoryDTO> listOfSoldItems = retailerInventoryRepository.findAllByretailerId(retailerId);
-		// this.retailerInventoryDao.getSoldItemsDetails(queryArguments);
 		try {
 			List<UserDTO> userList = (List<UserDTO>) userRepository.findAll();
-			// this.userDao.getUserIdList();
 
 			for (RetailerInventoryDTO soldItem : listOfSoldItems) {
 				RetailerInventoryBean object = new RetailerInventoryBean();
