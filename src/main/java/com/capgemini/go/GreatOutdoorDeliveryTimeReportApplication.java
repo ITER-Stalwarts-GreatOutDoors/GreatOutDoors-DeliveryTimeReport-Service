@@ -13,7 +13,6 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.cloud.client.discovery.EnableDiscoveryClient;
 
 import com.capgemini.go.dto.RetailerInventoryDTO;
-import com.capgemini.go.dto.UserDTO;
 import com.capgemini.go.repository.RetailerInventoryRepository;
 import com.capgemini.go.repository.UserRepository;
 

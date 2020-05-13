@@ -3,6 +3,7 @@ package com.capgemini.go.controller;
 import java.util.Calendar;
 import java.util.List;
 
+import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -20,6 +21,8 @@ import com.capgemini.go.exception.RetailerInventoryException;
 @RequestMapping("/getRetailerInventory")
 public class RetailerInventoryController {
 	
+
+	private static final Logger logger = Logger.getLogger(RetailerInventoryController.class);
 	@Autowired
 	private RetailerInventoryService retailerInventoryService;
 		
@@ -31,25 +34,31 @@ public class RetailerInventoryController {
 		List<RetailerInventoryBean> result = null;
 		switch (reportType) {
 		case 1: {
-			try {
-				result = retailerInventoryService.getItemWiseDeliveryTimeReport(retailerId);
-			} catch (RetailerInventoryException error) {
-				error.printStackTrace();
-				System.out.println("Delivery Time Report - " + error.getMessage());
-			}
-			break;
+				if(retailerId.isEmpty())
+				{
+					logger.error("Null request, cart details not provided at /getDeliveryTimeReport");
+					throw new RetailerInventoryException("Null request, please provide retailerId!");
+				}
+				else
+				{
+					result = retailerInventoryService.getItemWiseDeliveryTimeReport(retailerId);
+				}
+				break;
 		}
 		case 2: {
-			try {
-				result = retailerInventoryService.getCategoryWiseDeliveryTimeReport(retailerId);
-			} catch (RetailerInventoryException error) {
-				error.printStackTrace();
-				System.out.println("Delivery Time Report - " + error.getMessage());
-			}
-			break;
+				if(retailerId.isEmpty())
+				{
+					logger.error("Null request, cart details not provided at /getDeliveryTimeReport");
+					throw new RetailerInventoryException("Null request, please provide retailer Id!");
+				}
+				else
+				{
+					result = retailerInventoryService.getCategoryWiseDeliveryTimeReport(retailerId);
+				}
+				break;
 		}
 		default: {		
-			System.out.println("Delivery Time Report - " + "Invalid Argument Recieved");
+			logger.error("getDeliveryTimeReport - " + "Invalid Argument Received");
 		}
 	}
 	
@@ -64,40 +73,47 @@ public class RetailerInventoryController {
 		List<RetailerInventoryBean> result = null;
 		switch (reportType) {
 		case 1: {
-			try {
+			if(retailerId.isEmpty())
+			{
+				logger.error("Null request, cart details not provided at /ShelfTimeReport");
+				throw new RetailerInventoryException("Null request, please provide retailer Id!");
+			}
+			else
+			{
 				result = retailerInventoryService.getMonthlyShelfTimeReport(retailerId, dateSelection);
-			} catch (RetailerInventoryException error) {
-				// logger.error("getShelfTimeReport - " + error.getMessage());
-				error.printStackTrace();
-				System.out.println("Shelf Time Report - " + error.getMessage());
 			}
 			break;
 		}
 
 		case 2: {
-			try {
+			if(retailerId.isEmpty())
+			{
+				logger.error("Null request, cart details not provided at /ShelfTimeReport");
+				throw new RetailerInventoryException("Null request, please provide retailer Id!");
+			}
+			else
+			{
 				result = retailerInventoryService.getQuarterlyShelfTimeReport(retailerId, dateSelection);
-			} catch (RetailerInventoryException error) {
-				// logger.error("getShelfTimeReport - " + error.getMessage());
-					error.printStackTrace();
-					System.out.println("Shelf Time Report - " + error.getMessage());
 			}
 			break;
 		}
 
 		case 3: {
-			try {
+			if(retailerId.isEmpty())
+			{
+				logger.error("Null request, cart details not provided at /ShelfTimeReport");
+				throw new RetailerInventoryException("Null request, please provide retailer Id!");
+			}
+			else
+			{
 				result = retailerInventoryService.getYearlyShelfTimeReport(retailerId, dateSelection);
-			} catch (RetailerInventoryException error) {
-				// logger.error("getShelfTimeReport - " + error.getMessage());
-				error.printStackTrace();
-				System.out.println("Shelf Time Report - " + error.getMessage());
 			}
 			break;
 		}
 		default: {
-			// logger.error("getShelfTimeReport - " + "Invalid Argument Received");
-			System.out.println("Shelf Time Report - " + "Invalid Argument Recieved");
+			
+			logger.error("getShelfTimeReport - " + "Invalid Argument Received");
+			
 		}
 		}
 		return result;
@@ -108,13 +124,13 @@ public class RetailerInventoryController {
 	@GetMapping("/getProductRecieveTime")
 	public String getUpdateProductRecieveTimeStamp(@RequestBody RetailerInventoryDTO retailerInventoryDTO)
 	{
-		String status="Product Timestamp updated";
-		try {
-			retailerInventoryService.updateProductRecieveTimeStamp(retailerInventoryDTO);
-		}catch (RetailerInventoryException error) {
-			error.printStackTrace();
-			System.out.println("Product Recieve Time - " + error.getMessage());
+		if(retailerInventoryDTO==null || retailerInventoryDTO.getProductRecieveTimestamp()==null) { 
+			logger.error("Null request, cart details not provided at /getProductRecieveTime");
+			throw new RetailerInventoryException("Null request, please provide recieve timestamp!");
 		}
+		String status="Product Recieve Timestamp updated";
+		retailerInventoryService.updateProductRecieveTimeStamp(retailerInventoryDTO);
+		
 		return status;
 		
 	}
@@ -123,27 +139,25 @@ public class RetailerInventoryController {
 	@GetMapping("/getProductSaleTime")
 	public String getUpdateProductSaleTimeStamp(@RequestBody RetailerInventoryDTO retailerInventoryDTO)
 	{
-		String status="Product Timestamp updated";
-		try {
-			retailerInventoryService.updateProductSaleTimeStamp(retailerInventoryDTO);
-		}catch (RetailerInventoryException error) {
-			error.printStackTrace();
-			System.out.println("Product Sale Time - " + error.getMessage());
+		if(retailerInventoryDTO==null || retailerInventoryDTO.getProductSaleTimestamp()==null) { 
+			logger.error("Null request, cart details not provided at /getProductSaleTime");
+			throw new RetailerInventoryException("Null request, please provide sale timestamp!");
 		}
-		return status;
+		String status="Product Sale Timestamp updated";
+		retailerInventoryService.updateProductRecieveTimeStamp(retailerInventoryDTO);
 		
+		return status;
 	}
 	
 	@ResponseBody
 	@GetMapping("/RetailerList")
 	public List<RetailerInventoryDTO> getRetailerList () {
 		List<RetailerInventoryDTO> result = null;
-		try {
-			result = this.retailerInventoryService.getListOfRetailers();
-
-		} catch (Exception error) {
-			error.printStackTrace();
-			System.out.println("Retailer List - " + error.getMessage());
+		result = this.retailerInventoryService.getListOfRetailers();
+		if(result==null)
+		{
+			logger.error("Null request, cart details not provided at /RetailerList");
+			throw new RetailerInventoryException("Null request, please provide retailer List!");
 		}
 		return result;
 	}
@@ -153,11 +167,14 @@ public class RetailerInventoryController {
 	public List<RetailerInventoryDTO> getRetailerInventoryById (@RequestParam String retailerId) {
 		
 		List<RetailerInventoryDTO> result = null;
-		try {
-			result = this.retailerInventoryService.getInventoryById(retailerId);
-		} catch (Exception error) {
-			error.printStackTrace();
-			System.out.println("Retailer List By Invenory By Id - " + error.getMessage());
+		if(retailerId.isEmpty())
+		{
+			logger.error("Null request, cart details not provided at /RetailerInventoryById");
+			throw new RetailerInventoryException("Null request, please provide retailer Id!");
+		}
+		else
+		{
+			result = retailerInventoryService.getInventoryById(retailerId);
 		}
 		return result;
 	}

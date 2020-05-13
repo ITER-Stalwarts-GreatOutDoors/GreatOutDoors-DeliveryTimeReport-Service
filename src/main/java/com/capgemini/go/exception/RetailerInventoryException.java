@@ -1,23 +1,11 @@
 package com.capgemini.go.exception;
 
-public class RetailerInventoryException extends Exception {
-	private static final long serialVersionUID = -2339227516000641134L;
+@SuppressWarnings("serial")
+public class RetailerInventoryException extends RuntimeException{
 
-	public RetailerInventoryException() {}
-
-	public RetailerInventoryException(String errorMessage) {
-		super(errorMessage);
+	public RetailerInventoryException(String message) {
+		super(message);
 	}
+	
 
-	public RetailerInventoryException(Throwable cause) {
-		super(cause);
-	}
-
-	public RetailerInventoryException(String errorMessage, Throwable cause) {
-		super(errorMessage, cause);
-	}
-
-	public RetailerInventoryException(String errorMessage, Throwable cause, boolean enableSuppression, boolean writableStackTrace) {
-		super(errorMessage, cause, enableSuppression, writableStackTrace);
-	}
 }

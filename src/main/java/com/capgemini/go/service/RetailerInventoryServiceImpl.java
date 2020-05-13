@@ -24,9 +24,7 @@ import com.capgemini.go.exception.RetailerInventoryException;
 import com.capgemini.go.utility.GoUtility;
 @Service
 public class RetailerInventoryServiceImpl implements RetailerInventoryService {
-	
 
-	
 	@Autowired
 	private RetailerInventoryRepository retailerInventoryRepository;
 	@Autowired
@@ -56,7 +54,7 @@ public class RetailerInventoryServiceImpl implements RetailerInventoryService {
 				result.add(object);
 			}		
 		} catch (RuntimeException error) {
-			throw new RetailerInventoryException ("getItemWiseDeliveryTimeReport - " + ExceptionConstants.INTERNAL_RUNTIME_ERROR);
+			throw new RetailerInventoryException ("INTERNAL_RUNTIME_ERROR");
 		}
 		return result;
 	}
@@ -109,8 +107,7 @@ public class RetailerInventoryServiceImpl implements RetailerInventoryService {
 			}
 			
 		} catch (RuntimeException error) {
-			error.printStackTrace();
-			throw new RetailerInventoryException ("getCategoryWiseDeliveryTimeReport - " + ExceptionConstants.INTERNAL_RUNTIME_ERROR);
+			throw new RetailerInventoryException ("INTERNAL_RUNTIME_ERROR");
 		}
 		return result;
 	}
@@ -129,11 +126,9 @@ public class RetailerInventoryServiceImpl implements RetailerInventoryService {
 			existingItem.setProductRecieveTimestamp(retailerinventorydto.getProductRecieveTimestamp());
 	
 		} catch (IllegalStateException error) {
-			throw new RetailerInventoryException(
-					"updateProductReceiveTimeStamp - " + ExceptionConstants.INAPPROPRIATE_METHOD_INVOCATION);
+			throw new RetailerInventoryException("INAPPROPRIATE_METHOD_INVOCATION");
 		} catch (RollbackException error) {
-			throw new RetailerInventoryException(
-					"updateProductReceiveTimeStamp - " + ExceptionConstants.FAILURE_COMMIT_CHANGES);
+			throw new RetailerInventoryException("FAILURE_COMMIT_CHANGES");
 		} 
 		receiveTimestampUpdated = true;
 		return receiveTimestampUpdated;
@@ -147,17 +142,14 @@ public class RetailerInventoryServiceImpl implements RetailerInventoryService {
 		try {
 			RetailerInventoryDTO existingItem = (RetailerInventoryDTO) retailerInventoryRepository.findAll();
 			if (existingItem == null) {
-				throw new RetailerInventoryException(
-						"updateProductSaleTimeStamp - " + ExceptionConstants.PRODUCT_NOT_IN_INVENTORY);
+				throw new RetailerInventoryException("PRODUCT_NOT_IN_INVENTORY");
 			}
 			existingItem.setProductSaleTimestamp(retailerinventorydto.getProductSaleTimestamp());
 	
 		} catch (IllegalStateException error) {
-			throw new RetailerInventoryException(
-					"updateProductSaleTimeStamp - " + ExceptionConstants.INAPPROPRIATE_METHOD_INVOCATION);
+			throw new RetailerInventoryException("INAPPROPRIATE_METHOD_INVOCATION");
 		} catch (RollbackException error) {
-			throw new RetailerInventoryException(
-					"updateProductSaleTimeStamp - " + ExceptionConstants.FAILURE_COMMIT_CHANGES);
+			throw new RetailerInventoryException("FAILURE_COMMIT_CHANGES");
 		}
 		saleTimestampUpdated = true;
 		return saleTimestampUpdated;
@@ -222,13 +214,10 @@ public class RetailerInventoryServiceImpl implements RetailerInventoryService {
 							soldItem.getProductSaleTimestamp()));
 					object.setDeliveryTimePeriod(null);
 					result.add(object);
-				} else {
-					
 				}
 			}
 		} catch (RuntimeException error) {
-			//GoLog.getLogger(RetailerInventoryServiceImpl.class).error(error.getMessage());
-			throw new RetailerInventoryException ("getMonthlyShelfTimeReport - " + ExceptionConstants.INTERNAL_RUNTIME_ERROR);
+			throw new RetailerInventoryException ("INTERNAL_RUNTIME_ERROR");
 		}
 		return result;
 		 
@@ -262,8 +251,7 @@ public class RetailerInventoryServiceImpl implements RetailerInventoryService {
 			
 	
 		} catch (RuntimeException error) {
-			//GoLog.getLogger(RetailerInventoryServiceImpl.class).error(error.getMessage());
-			throw new RetailerInventoryException ("getQuarterlyShelfTimeReport - " + ExceptionConstants.INTERNAL_RUNTIME_ERROR);
+			throw new RetailerInventoryException ("INTERNAL_RUNTIME_ERROR");
 		}
 		return result;
 	}
@@ -295,9 +283,7 @@ public class RetailerInventoryServiceImpl implements RetailerInventoryService {
 			}
 
 		} catch (RuntimeException error) {
-			// logger.error(error.getMessage());
-			throw new RetailerInventoryException(
-					"getYearlyShelfTimeReport - " + ExceptionConstants.INTERNAL_RUNTIME_ERROR);
+			throw new RetailerInventoryException("INTERNAL_RUNTIME_ERROR");
 		}
 		return result;
 	}
