@@ -4,7 +4,7 @@ import java.time.Duration;
 import java.time.Period;
 import java.util.Calendar;
 
-import com.capgemini.go.exception.ExceptionConstants;
+
 
 public class GoUtility {
 
@@ -20,7 +20,7 @@ public class GoUtility {
 }
 	public static Period calculatePeriod(Calendar timestamp1, Calendar timestamp2) throws RuntimeException{
 		if (timestamp1.getTime().after(timestamp2.getTime())) {
-			throw new RuntimeException ("calculatePeriod - " + ExceptionConstants.INAPPROPRIATE_ARGUMENT_PASSED);
+			throw new RuntimeException ("INAPPROPRIATE_ARGUMENT_PASSED");
 		}
 		else {
 			long days = Duration.between (timestamp1.toInstant(), timestamp2.toInstant()).toDays();

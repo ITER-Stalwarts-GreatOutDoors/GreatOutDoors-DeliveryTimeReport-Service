@@ -9,7 +9,6 @@ import java.util.Map;
 import java.util.TimeZone;
 
 import javax.persistence.RollbackException;
-import com.capgemini.go.exception.ExceptionConstants;
 import com.capgemini.go.repository.RetailerInventoryRepository;
 import com.capgemini.go.repository.UserRepository;
 
@@ -120,8 +119,7 @@ public class RetailerInventoryServiceImpl implements RetailerInventoryService {
 
 			RetailerInventoryDTO existingItem = (RetailerInventoryDTO) retailerInventoryRepository.findAll();
 			if (existingItem == null) {
-			throw new RetailerInventoryException(
-						"updateProductReceiveTimeStamp - " + ExceptionConstants.PRODUCT_NOT_IN_INVENTORY);
+			throw new RetailerInventoryException("PRODUCT_NOT_IN_INVENTORY");
 			}
 			existingItem.setProductRecieveTimestamp(retailerinventorydto.getProductRecieveTimestamp());
 	
