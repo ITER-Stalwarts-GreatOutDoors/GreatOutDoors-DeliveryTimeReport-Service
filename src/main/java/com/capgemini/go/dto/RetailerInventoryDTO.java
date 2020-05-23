@@ -17,6 +17,8 @@ public class RetailerInventoryDTO {
 	public Calendar productDispatchTimestamp;
 	public Calendar productRecieveTimestamp;
 	public Calendar productSaleTimestamp;
+	
+	//Constructors
 	public RetailerInventoryDTO() {
 		super();
 		// TODO Auto-generated constructor stub
@@ -32,6 +34,8 @@ public class RetailerInventoryDTO {
 		this.productRecieveTimestamp = productRecieveTimestamp;
 		this.productSaleTimestamp = productSaleTimestamp;
 	}
+	
+	//Setters and Getters
 	public String getRetailerId() {
 		return retailerId;
 	}
@@ -74,6 +78,8 @@ public class RetailerInventoryDTO {
 	public void setProductSaleTimestamp(Calendar productSaleTimestamp) {
 		this.productSaleTimestamp = productSaleTimestamp;
 	}
+	
+	//To String
 	@Override
 	public String toString() {
 		return "RetailerInventoryDTO [retailerId=" + retailerId + ", productCategory=" + productCategory

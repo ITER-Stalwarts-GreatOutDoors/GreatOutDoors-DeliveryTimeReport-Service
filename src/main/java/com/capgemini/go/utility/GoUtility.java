@@ -18,6 +18,17 @@ public class GoUtility {
 		default : {return "OTHER";}		
 	}
 }
+	
+	/**
+	 * - Function Name : calculatePeriod
+	 * - Description : Calculates and returns a Period object containing the period in (years, months, days) <br>
+	 * between two Calendar instances. <br>
+	 * - Author : Kunal <br>
+	 * 
+	 * @param timestamp1 - This timestamp must come before <code>timestamp2</code>
+	 * @param timestamp2 - This timestamp must come after <code>timestamp1</code>
+	 * @return Period - Period of (years, months, )
+	 */
 	public static Period calculatePeriod(Calendar timestamp1, Calendar timestamp2) throws RuntimeException{
 		if (timestamp1.getTime().after(timestamp2.getTime())) {
 			throw new RuntimeException ("INAPPROPRIATE_ARGUMENT_PASSED");

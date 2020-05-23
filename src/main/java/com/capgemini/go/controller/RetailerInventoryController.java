@@ -26,6 +26,7 @@ public class RetailerInventoryController {
 	@Autowired
 	private RetailerInventoryService retailerInventoryService;
 		
+	/****************************Delivery Time Report**********************************/
 	@ResponseBody
 	@GetMapping("/getDeliveryTimeReport")
 	public List<RetailerInventoryBean> getDeliveryTimeReport(@RequestParam String retailerId, @RequestParam int reportType)
@@ -65,6 +66,8 @@ public class RetailerInventoryController {
 		return result;
 		
 		}
+	
+	/****************************Shelf Time Report**********************************/
 	@ResponseBody
 	@GetMapping("/ShelfTimeReport")
 	public List<RetailerInventoryBean> getShelfTimeReport(@RequestParam String retailerId, @RequestParam int reportType) {
@@ -121,34 +124,35 @@ public class RetailerInventoryController {
 	}
 	
 	@ResponseBody
-	@GetMapping("/getProductRecieveTime")
-	public String getUpdateProductRecieveTimeStamp(@RequestBody RetailerInventoryDTO retailerInventoryDTO)
+	@GetMapping("/updateRecieveTime")
+	public String UpdateRecieveTime(@RequestBody RetailerInventoryDTO retailerInventoryDTO)
 	{
 		if(retailerInventoryDTO==null || retailerInventoryDTO.getProductRecieveTimestamp()==null) { 
 			logger.error("Null request, cart details not provided at /getProductRecieveTime");
 			throw new RetailerInventoryException("Null request, please provide recieve timestamp!");
 		}
 		String status="Product Recieve Timestamp updated";
-		retailerInventoryService.updateProductRecieveTimeStamp(retailerInventoryDTO);
+		retailerInventoryService.updateItemRecieveTimeStamp(retailerInventoryDTO);
 		
 		return status;
 		
 	}
 	
 	@ResponseBody
-	@GetMapping("/getProductSaleTime")
-	public String getUpdateProductSaleTimeStamp(@RequestBody RetailerInventoryDTO retailerInventoryDTO)
+	@GetMapping("/updateSaleTime")
+	public String UpdateSaleTime(@RequestBody RetailerInventoryDTO retailerInventoryDTO)
 	{
 		if(retailerInventoryDTO==null || retailerInventoryDTO.getProductSaleTimestamp()==null) { 
 			logger.error("Null request, cart details not provided at /getProductSaleTime");
 			throw new RetailerInventoryException("Null request, please provide sale timestamp!");
 		}
 		String status="Product Sale Timestamp updated";
-		retailerInventoryService.updateProductRecieveTimeStamp(retailerInventoryDTO);
+		retailerInventoryService.updateItemSaleTimeStamp(retailerInventoryDTO);
 		
 		return status;
 	}
 	
+	/*****************************Retailer Management System*************************/
 	@ResponseBody
 	@GetMapping("/RetailerList")
 	public List<RetailerInventoryDTO> getRetailerList () {

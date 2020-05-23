@@ -35,6 +35,7 @@ public class UserDTO implements Serializable {
 	@Column(name = "USER_ACTIVE_STATUS", unique = false, nullable = false, length = 1)
 	private boolean userActiveStatus;
 
+	//Constructors
 	public UserDTO() {
 
 	}
@@ -51,6 +52,7 @@ public class UserDTO implements Serializable {
 		this.userActiveStatus = userActiveStatus;
 	}
 
+	//Setters and Getters
 	public String getUserName() {
 		return userName;
 	}
@@ -107,6 +109,8 @@ public class UserDTO implements Serializable {
 		this.userActiveStatus = userActiveStatus;
 	}
 
+	
+	//To String
 	@Override
 	public String toString() {
 		return "UserEntity [userName=" + userName + ", userId=" + userId + ", userMail=" + userMail + ", userPassword="
